@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Code Editor Pro</title>
+<style>
+:root{--bg:#0d1117;--panel:#151b24;--panel2:#1b2430;--text:#e6edf3;--muted:#8b98a8;--line:#2a3442;--green:#38d996;--blue:#62a8ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px system-ui,Arial;height:100vh;overflow:hidden}
+header{height:58px;background:#111720;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 13px}
+.brand{font-weight:800;font-size:17px;letter-spacing:.3px}.brand b{color:var(--green)}.actions{display:flex;gap:7px}
+button,select{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:8px;padding:8px 10px;font-size:12px}
+button.primary{background:var(--green);color:#07130e;border:0;font-weight:800}
+.layout{display:grid;grid-template-columns:145px 1fr;height:calc(100vh - 58px)}
+aside{background:#111720;border-right:1px solid var(--line);padding:10px 7px;overflow:auto}
+.side-title{font-size:10px;color:var(--muted);letter-spacing:1.4px;padding:9px 8px}
+.nav{display:block;width:100%;text-align:left;margin:3px 0;background:transparent;border-color:transparent;font-size:13px}
+.nav.active{background:#1e2c32;border-color:#24483d;color:var(--green)}
+main{min-width:0;display:flex;flex-direction:column}.toolbar{display:flex;align-items:center;gap:7px;padding:8px;border-bottom:1px solid var(--line);overflow:auto}
+#filename{min-width:80px;max-width:130px;background:transparent;border:0;color:var(--text);font-size:13px}
+.tabs{height:38px;display:flex;align-items:stretch;background:#111720;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{padding:10px 13px;border-right:1px solid var(--line);white-space:nowrap;color:var(--muted);cursor:pointer}.tab.active{color:var(--text);background:var(--bg);border-top:2px solid var(--green)}
+.editorwrap{position:relative;flex:1;min-height:0;display:flex;background:var(--bg)}
+#lineNums{width:36px;overflow:hidden;text-align:right;padding:12px 7px;color:#536171;white-space:pre;line-height:1.65;font:13px/1.65 monospace;background:#0b0f14}
+#editor{flex:1;resize:none;border:0;outline:0;background:transparent;color:#dce6f2;padding:12px 10px;font:13px/1.65 'Courier New',monospace;tab-size:2;white-space:pre;overflow:auto}
+.bottom{height:34px;background:#111720;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:var(--muted);font-size:11px}
+.panel{display:none;position:absolute;inset:0;background:var(--bg);padding:16px;overflow:auto}.panel h3{margin-top:0}.card{background:var(--panel);border:1px solid var(--line);padding:12px;border-radius:12px;margin:9px 0}.card p{color:var(--muted);line-height:1.5}.extension{display:flex;justify-content:space-between;gap:8px;align-items:center}.extension strong{display:block}.badge{color:var(--green);font-size:11px}.small{color:var(--muted);font-size:12px}
+#preview{display:none;position:absolute;inset:0;background:white;color:#111;border:0;width:100%;height:100%}
+@media(max-width:560px){.layout{grid-template-columns:112px 1fr}aside{padding:7px 4px}.nav{font-size:11px;padding:8px 5px}.toolbar{padding:6px}button{padding:7px;font-size:11px}.brand{font-size:15px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><b>LC</b> Code Editor <span class="small">PRO</span></div><div class="actions"><button id="themeBtn">☼</button><button class="primary" id="saveBtn">Save</button></div></header>
+<div class="layout">
+<aside><div class="side-title">WORKSPACE</div>
+<button class="nav active" data-view="editor">▣ Editor</button><button class="nav" data-view="files">▤ Files</button><button class="nav" data-view="extensions">⬡ Extensions</button><button class="nav" data-view="ai">✦ AI Assistant</button><button class="nav" data-view="preview">▷ Live Preview</button><button class="nav" data-view="settings">⚙ Settings</button>
+<div class="side-title">LANGUAGES</div><button class="nav lang" data-lang="html">HTML</button><button class="nav lang" data-lang="css">CSS</button><button class="nav lang" data-lang="js">JavaScript</button><button class="nav lang" data-lang="php">PHP</button><button class="nav lang" data-lang="py">Python</button>
+</aside>
+<main>
+<div class="toolbar"><select id="language"><option value="html">HTML</option><option value="css">CSS</option><option value="js">JavaScript</option><option value="php">PHP</option><option value="py">Python</option><option value="json">JSON</option></select><input id="filename" value="index.html" aria-label="File name"><button id="newBtn">+ New</button><button id="runBtn" class="primary">▶ Run</button></div>
+<div class="tabs"><div class="tab active" id="tab">index.html</div></div>
+<div class="editorwrap" id="editorView"><div id="lineNums">1</div><textarea id="editor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Code editor"><!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello World</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #101820; color: white; }
+    h1 { color: #38d996; }
+  </style>
+</head>
+<body>
+  <h1>Hello, Developer!</h1>
+  <p>Your Code Editor Pro is ready.</p>
+  <button onclick="alert('It works!')">Test JavaScript</button>
+</body>
+</html></textarea><iframe id="preview" sandbox="allow-scripts"></iframe>
+<div class="panel" id="filesPanel"><h3>▤ Project Files</h3><p class="small">Demo workspace files are stored locally in this app.</p><div id="fileList"></div><button class="primary" id="createFile">+ Create file</button></div>
+<div class="panel" id="extensionsPanel"><h3>⬡ Extensions Marketplace</h3><p class="small">Install and enable built-in sample extensions. This is a starter marketplace; VS Code extensions are not directly compatible.</p><div id="extList"></div></div>
+<div class="panel" id="aiPanel"><h3>✦ AI Coding Assistant</h3><div class="card"><strong>Ask AI about your code</strong><p>Connect an AI API in a future backend version to enable real AI responses. Never place secret API keys in the app.</p><textarea id="aiPrompt" style="width:100%;height:90px;background:#0d1117;color:white;border:1px solid #2a3442;border-radius:8px;padding:10px" placeholder="Explain this code or ask for a function..."></textarea><button class="primary" id="askAi">Prepare prompt</button><p id="aiResult" class="small"></p></div></div>
+<div class="panel" id="settingsPanel"><h3>⚙ Settings</h3><div class="card"><strong>Editor preferences</strong><p>Autosave locally: enabled</p><p>Font size: <button id="fontDown">A−</button> <button id="fontUp">A+</button></p><p>Theme: <button id="settingsTheme">Toggle dark/light</button></p></div><div class="card"><strong>About</strong><p>Code Editor Pro starter Android WebView app. PHP, Python and database projects require a suitable server/runtime; the built-in Run button previews HTML/CSS/JavaScript only.</p></div></div>
+</div>
+<div class="bottom"><span id="status">Ready • Local workspace</span><span id="position">Ln 1, Col 1</span></div>
+</main></div>
+<script>
+const $=id=>document.getElementById(id), editor=$('editor');
+const samples={
+html:editor.value, css:'/* CSS stylesheet */\\nbody { margin: 0; font-family: sans-serif; }\\n.button { background: #38d996; padding: 12px; }',
+js:'// JavaScript\\nfunction greet(name) {\\n  return `Hello, ${name}!`;\\n}\\n\\nconsole.log(greet("Developer"));',
+php:'<?php\\n// PHP runs on a server, not directly in browser preview.\\n$name = "Developer";\\necho "Hello, " . $name;\\n?>',
+py:'# Python sample\\ndef greet(name):\\n    return f"Hello, {name}!"\\n\\nprint(greet("Developer"))',
+json:'{\\n  "name": "Code Editor Pro",\\n  "version": "1.0"\\n}'
+};
+let current='html', files=JSON.parse(localStorage.getItem('cep-files')||'{}'), extensions=JSON.parse(localStorage.getItem('cep-ext')||'{}');
+if(!Object.keys(files).length) files={'index.html':samples.html,'style.css':samples.css,'script.js':samples.js,'index.php':samples.php,'main.py':samples.py};
+function saveCurrent(){files[$('filename').value||'untitled.'+current]=editor.value;localStorage.setItem('cep-files',JSON.stringify(files));localStorage.setItem('cep-code',editor.value);$('status').textContent='Saved locally ✓';renderFiles()}
+function loadLang(lang){saveCurrent();current=lang;$('language').value=lang;let name={html:'index.html',css:'style.css',js:'script.js',php:'index.php',py:'main.py',json:'data.json'}[lang];$('filename').value=name;editor.value=files[name]??samples[lang]??'';$('tab').textContent=name;updateLines();showView('editor')}
+function updateLines(){let n=editor.value.split('\\n').length;$('lineNums').textContent=Array.from({length:n},(_,i)=>i+1).join('\\n')}
+function showView(view){document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.view===view));['filesPanel','extensionsPanel','aiPanel','settingsPanel'].forEach(id=>$(id).style.display='none');$('editorView').style.display='flex';$('preview').style.display='none';if(view==='files'){$('editorView').style.display='block';$('filesPanel').style.display='block';renderFiles()}if(view==='extensions'){$('editorView').style.display='block';$('extensionsPanel').style.display='block';renderExtensions()}if(view==='ai'){$('editorView').style.display='block';$('aiPanel').style.display='block'}if(view==='settings'){$('editorView').style.display='block';$('settingsPanel').style.display='block'}if(view==='preview')runCode()}
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+document.querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>loadLang(b.dataset.lang));
+$('language').onchange=e=>loadLang(e.target.value);
+$('saveBtn').onclick=saveCurrent;
+$('newBtn').onclick=()=>{let name=prompt('New file name (example: app.js)');if(!name)return;saveCurrent();files[name]='';localStorage.setItem('cep-files',JSON.stringify(files));$('filename').value=name;editor.value='';$('tab').textContent=name;current=(name.split('.').pop()||'txt');updateLines();showView('editor')};
+editor.addEventListener('input',()=>{updateLines();$('position').textContent='Ln '+(editor.value.slice(0,editor.selectionStart).split('\\n').length)+', Col '+(editor.selectionStart-(editor.value.lastIndexOf('\\n',editor.selectionStart-1)+1)+1);localStorage.setItem('cep-code',editor.value);$('status').textContent='Editing…'});
+editor.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();let a=editor.selectionStart,b=editor.selectionEnd;editor.setRangeText('  ',a,b,'end');updateLines()}if(e.ctrlKey&&e.key.toLowerCase()==='s'){e.preventDefault();saveCurrent()}});
+function runCode(){saveCurrent();if(current==='html'){ $('preview').srcdoc=editor.value; $('preview').style.display='block';$('status').textContent='Preview running'}else if(current==='css'){ $('preview').srcdoc='<style>'+editor.value+'</style><h2>CSS Preview</h2><p>Edit HTML to test a complete page.</p>'; $('preview').style.display='block'}else if(current==='js'){ $('preview').srcdoc='<body><pre id="out"></pre><script>const old=console.log;console.log=(...a)=>document.getElementById("out").textContent+=a.join(" ")+"\\\\n";try{'+editor.value.replace(/<\\/script/gi,'<\\\\/script')+'}catch(e){document.getElementById("out").textContent=e}</'+'script></body>';$('preview').style.display='block'}else alert(current.toUpperCase()+' needs a runtime/server. HTML, CSS and JavaScript can be previewed here.');}
+$('runBtn').onclick=runCode;
+function renderFiles(){$('fileList').innerHTML='';Object.keys(files).forEach(name=>{let d=document.createElement('div');d.className='card';d.innerHTML='<div class="extension"><strong></strong><button>Open</button></div><p class="small">Local project file</p>';d.querySelector('strong').textContent=name;d.querySelector('button').onclick=()=>{let ext=name.split('.').pop();let map={html:'html',css:'css',js:'js',php:'php',py:'py',json:'json'};saveCurrent();$('filename').value=name;editor.value=files[name];current=map[ext]||ext;$('language').value=map[ext]||'html';$('tab').textContent=name;updateLines();showView('editor')};$('fileList').appendChild(d)})}
+$('createFile').onclick=()=>{$('newBtn').click()};
+const extData=[['HTML Toolkit','HTML snippets and helpers'],['CSS Formatter','Organize CSS code'],['JavaScript Snippets','Common JS snippets'],['PHP Helper','PHP syntax and snippets'],['Prettier Formatter','Basic code formatting tools'],['Git Helper','Git command reference'],['AI Assistant','AI integration placeholder'],['Live Preview','Preview web files']];
+function renderExtensions(){$('extList').innerHTML='';extData.forEach(([name,desc])=>{let key=name.toLowerCase(),on=!!extensions[key];let d=document.createElement('div');d.className='card extension';let left=document.createElement('div');left.innerHTML='<strong></strong><p class="small"></p>';left.querySelector('strong').textContent=name;left.querySelector('p').textContent=desc;let btn=document.createElement('button');btn.textContent=on?'Enabled ✓':'Install';btn.onclick=()=>{extensions[key]=!extensions[key];localStorage.setItem('cep-ext',JSON.stringify(extensions));renderExtensions()};d.append(left,btn);$('extList').appendChild(d)})}
+$('askAi').onclick=()=>{$('aiResult').textContent='Prompt prepared. To receive an actual AI answer, connect a secure backend/API in a later setup.';};
+$('themeBtn').onclick=$('settingsTheme').onclick=()=>{document.body.classList.toggle('light');let l=document.body.classList.contains('light');document.documentElement.style.setProperty('--bg',l?'#f4f7fb':'#0d1117');document.documentElement.style.setProperty('--panel',l?'#ffffff':'#151b24');document.documentElement.style.setProperty('--panel2',l?'#e7edf5':'#1b2430');document.documentElement.style.setProperty('--text',l?'#17202b':'#e6edf3');document.documentElement.style.setProperty('--muted',l?'#627083':'#8b98a8');document.documentElement.style.setProperty('--line',l?'#d3dce7':'#2a3442');};
+$('fontUp').onclick=()=>editor.style.fontSize=(parseInt(getComputedStyle(editor).fontSize)+1)+'px';
+$('fontDown').onclick=()=>editor.style.fontSize=Math.max(10,parseInt(getComputedStyle(editor).fontSize)-1)+'px';
+editor.value=localStorage.getItem('cep-code')||editor.value;updateLines();renderFiles();
+</script></body></html>
